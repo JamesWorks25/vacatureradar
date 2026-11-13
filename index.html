@@ -153,7 +153,7 @@ table.src th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:
 <header class="top">
   <div class="brand">
     <h1>Vacatureradar</h1>
-    <p id="runline">Public affairs, parlementair en bestuurlijk werk in Den Haag, Amsterdam en omstreken</p>
+    <p id="runline">Ministeries in Den Haag, Gemeente Amsterdam, Big Four en grote bedrijven in Amsterdam</p>
   </div>
   <div class="stats" aria-label="Overzicht">
     <div class="stat new"><b id="st-new">–</b><span>nieuw sinds je vorige bezoek</span></div>
@@ -292,9 +292,9 @@ table.src th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:
 <script>
 (function(){
   "use strict";
-  var THEMA = ["Public affairs","Parlementair","Bestuursadvies","Corporate affairs","Consultancy","Beleid","Economie","Internationaal","Communicatie","Campagnes","Wonen en ruimte","Interieur en styling"];
-  var SECTOR = ["Rijksoverheid","Gemeente of provincie","Overige publieke organisatie","Internationale organisatie","Corporate","Consultancy","Adviesbureau","Campagne- of communicatiebureau","Maatschappelijke organisatie","Interieur en design"];
-  var REGIO = ["Den Haag e.o.","Amsterdam e.o.","Utrecht e.o.","Overig Nederland"];
+  var THEMA = ["Public affairs","Bestuursadvies","Parlementair","Corporate affairs","Consultancy","Internationaal","Communicatie","Economie"];
+  var SECTOR = ["Rijksoverheid","Gemeente of provincie","Consultancy","Corporate"];
+  var REGIO = ["Den Haag e.o.","Amsterdam e.o."];
   var SEN = ["Junior","Medior","Senior","Lead of manager","Director","Onbekend"];
   var SOURCES = [
     ["Werken voor Nederland","Alle Rijksoverheid-vacatures (ministeries, uitvoeringsorganisaties)"],
@@ -578,7 +578,7 @@ table.src th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:
       var d = parseDate(m.datum);
       var txt = "Laatste zoekronde: "+d.toLocaleString("nl-NL",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+". "+(m.nieuw!=null? m.nieuw+" nieuwe vacature"+(m.nieuw===1?"":"s")+" toegevoegd.":"")+(m.opmerking?" "+m.opmerking:"");
       $("src-run").textContent = txt;
-      $("runline").textContent = "Laatste zoekronde "+d.toLocaleDateString("nl-NL",{day:"numeric",month:"long"})+" · public affairs, parlementair en bestuurlijk werk";
+      $("runline").textContent = "Laatste zoekronde "+d.toLocaleDateString("nl-NL",{day:"numeric",month:"long"})+" · ministeries, Big Four en grote bedrijven";
     }
   }
   renderSources();
