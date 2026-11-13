@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vacatureradar</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: vaste filterkolom links, scanbare vacaturelijst rechts; op telefoon klapt de filterkolom in. */
+:root{
+  --bg:#f3f4f2;
+  --panel:#ffffff;
+  --ink:#17212b;
+  --muted:#5d6873;
+  --line:#dde1df;
+  --accent:#1d5c63;
+  --accent-soft:#e2eeee;
+  --flag:#b8650f;
+  --flag-soft:#fbefe0;
+  --good:#2f7a3d;
+  --bad:#a63a2e;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11171c; --panel:#18212a; --ink:#e6ebee; --muted:#97a3ad; --line:#2a3540;
+    --accent:#6cbcc4; --accent-soft:#1d3237; --flag:#e9a457; --flag-soft:#3a2a17;
+    --good:#7cc489; --bad:#e58a7f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11171c; --panel:#18212a; --ink:#e6ebee; --muted:#97a3ad; --line:#2a3540;
+  --accent:#6cbcc4; --accent-soft:#1d3237; --flag:#e9a457; --flag-soft:#3a2a17;
+  --good:#7cc489; --bad:#e58a7f; color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding:20px 24px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand h1{font:600 28px/1.1 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.stats{display:flex;gap:20px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;min-width:72px}
+.stat b{font:500 22px/1 var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);margin-top:4px}
+.stat.new b{color:var(--flag)}
+nav.tabs{display:flex;gap:4px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;cursor:pointer;color:var(--muted);font-weight:500}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+.shell{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100% - 140px)}
+aside.filters{border-right:1px solid var(--line);padding:18px 20px 40px;background:var(--panel);display:flex;flex-direction:column;gap:20px}
+.fgroup h3{font:600 12px/1 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.fgroup label.opt{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;font-size:14px}
+.fgroup label.opt .cnt{margin-left:auto;font:12px var(--mono);color:var(--muted)}
+.fgroup input[type="search"]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.range-row{display:flex;justify-content:space-between;font:13px var(--mono);color:var(--muted)}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+input[type="checkbox"]{accent-color:var(--accent)}
+.reset{align-self:flex-start;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:13px}
+
+main.list{padding:18px 24px 60px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+.toolbar .count{color:var(--muted);font-size:14px}
+.toolbar select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.toggle-filters{display:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+.notice{padding:10px 14px;border-radius:8px;background:var(--accent-soft);font-size:14px}
+.notice.warn{background:var(--flag-soft)}
+
+article.job{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:6px 16px}
+article.job.is-new{border-left-color:var(--flag)}
+article.job.saved{border-left-color:var(--accent)}
+article.job.applied{border-left-color:var(--good)}
+article.job.hidden-job{opacity:.6}
+.job h2{font:600 19px/1.25 var(--display);margin:0;text-wrap:balance}
+.job .org{color:var(--muted);font-size:14px}
+.job .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.chip.theme{background:var(--accent-soft);border-color:transparent}
+.chip.new{background:var(--flag-soft);color:var(--flag);border-color:transparent;font-weight:600}
+.chip.closing{color:var(--bad);border-color:currentColor}
+.right{text-align:right;display:flex;flex-direction:column;gap:2px;align-items:flex-end}
+.sal{font:500 15px var(--mono);font-variant-numeric:tabular-nums}
+.sal.unknown{color:var(--muted);font-family:var(--body);font-size:13px}
+.deadline{font-size:12px;color:var(--muted)}
+.score{font:12px var(--mono);color:var(--muted)}
+details.more{grid-column:1/-1}
+details.more summary{cursor:pointer;color:var(--accent);font-size:13px;width:max-content}
+details.more p{margin:8px 0 0;max-width:68ch}
+.verif{font-size:12px;color:var(--muted);margin-top:6px}
+.actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.actions button,.actions a{font-size:13px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);cursor:pointer;text-decoration:none;color:var(--ink)}
+.actions a.primary{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.actions button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0 2px;padding:10px 12px;background:var(--bg);border-radius:8px}
+.fact{display:flex;flex-direction:column;min-width:0}
+.fact span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fact b{font-size:17px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.fact b.sal{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+.fact b.unknown{color:var(--muted);font-weight:500;font-size:15px}
+.fact small{font-size:12px;color:var(--muted)}
+.fact b.hi{color:var(--good)}
+.toast{position:fixed;right:16px;bottom:16px;z-index:50;max-width:min(420px,calc(100% - 32px));background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--flag);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.toast h4{margin:0;font:600 17px var(--display)}
+.toast ul{margin:0;padding-left:18px;font-size:14px;max-height:40vh;overflow:auto}
+.toast .tbtns{display:flex;gap:8px}
+.toast button{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:13px}
+.toast button.primary{background:var(--flag);border-color:var(--flag);color:#fff}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+
+section.page{padding:24px;max-width:860px;display:flex;flex-direction:column;gap:18px}
+section.page h2{font:600 24px var(--display);margin:0}
+section.page p{max-width:68ch;margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field small{color:var(--muted)}
+.field textarea,.field input{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);width:100%}
+.field textarea{min-height:90px;resize:vertical}
+.savebar{display:flex;gap:12px;align-items:center}
+.savebar button{background:var(--accent);color:var(--panel);border:0;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:600}
+.savebar span{font-size:13px;color:var(--muted)}
+table.src{border-collapse:collapse;width:100%;font-size:14px}
+table.src th,table.src td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.src th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+[hidden]{display:none!important}
+
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  aside.filters{border-right:0;border-bottom:1px solid var(--line);display:none}
+  aside.filters.open{display:flex}
+  .toggle-filters{display:inline-block}
+  header.top,main.list,section.page{padding-left:16px;padding-right:16px}
+  nav.tabs{padding:0 12px}
+  article.job{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .right{align-items:flex-start;text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Vacatureradar</h1>
+    <p id="runline">Public affairs, parlementair en bestuurlijk werk in Den Haag, Amsterdam en omstreken</p>
+  </div>
+  <div class="stats" aria-label="Overzicht">
+    <div class="stat new"><b id="st-new">–</b><span>nieuw sinds je vorige bezoek</span></div>
+    <div class="stat"><b id="st-open">–</b><span>open vacatures</span></div>
+    <div class="stat"><b id="st-saved">–</b><span>bewaard</span></div>
+    <div class="stat"><b id="st-applied">–</b><span>gesolliciteerd</span></div>
+  </div>
+</header>
+<nav class="tabs" role="tablist">
+  <button role="tab" id="tab-vac" aria-selected="true" data-view="vacatures">Vacatures</button>
+  <button role="tab" id="tab-prof" aria-selected="false" data-view="profiel">Zoekprofiel</button>
+  <button role="tab" id="tab-src" aria-selected="false" data-view="bronnen">Bronnen en meldingen</button>
+</nav>
+
+<div class="shell" id="view-vacatures">
+  <aside class="filters" id="filters" aria-label="Filters">
+    <div class="fgroup">
+      <h3>Zoeken</h3>
+      <input type="search" id="f-q" placeholder="Functie, organisatie, onderwerp">
+    </div>
+    <div class="fgroup">
+      <h3>Weergave</h3>
+      <label class="opt"><input type="checkbox" id="f-onlynew"> Alleen nieuw</label>
+      <label class="opt"><input type="checkbox" id="f-onlysaved"> Alleen bewaard</label>
+      <label class="opt"><input type="checkbox" id="f-showhidden"> Verborgen vacatures tonen</label>
+      <label class="opt"><input type="checkbox" id="f-hideclosed" checked> Verlopen vacatures verbergen</label>
+    </div>
+    <div class="fgroup"><h3>Onderwerp</h3><div id="g-thema"></div></div>
+    <div class="fgroup"><h3>Soort werkgever</h3><div id="g-sector"></div></div>
+    <div class="fgroup"><h3>Regio</h3><div id="g-regio"></div></div>
+    <div class="fgroup"><h3>Niveau</h3><div id="g-sen"></div></div>
+    <div class="fgroup">
+      <h3>Salaris (bruto per maand, max van schaal)</h3>
+      <div class="range-row"><span>minimaal</span><span id="o-sal">geen grens</span></div>
+      <input type="range" id="f-sal" min="0" max="9000" step="250" value="0" aria-label="Minimaal salaris">
+      <label class="opt"><input type="checkbox" id="f-salunk" checked> Ook salaris onbekend</label>
+      <label class="opt"><input type="checkbox" id="f-sal5"> Alleen als max. salaris ≥ € 5.000</label>
+    </div>
+    <div class="fgroup">
+      <h3>Gevraagde werkervaring</h3>
+      <div class="range-row"><span>maximaal</span><span id="o-exp">8 jaar</span></div>
+      <input type="range" id="f-exp" min="0" max="8" step="1" value="8" aria-label="Maximaal gevraagde jaren ervaring">
+      <label class="opt"><input type="checkbox" id="f-expunk" checked> Ook ervaring onbekend</label>
+    </div>
+    <button class="reset" id="f-reset" type="button">Filters wissen</button>
+  </aside>
+
+  <main class="list">
+    <div class="toolbar">
+      <button class="toggle-filters" id="toggle-filters" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
+      <span class="count" id="count">Laden…</span>
+      <label>Sorteren
+        <select id="f-sort">
+          <option value="relevant">Best passend</option>
+          <option value="nieuw">Nieuwst gevonden</option>
+          <option value="deadline">Sluitingsdatum</option>
+          <option value="salaris">Hoogste salaris</option>
+        </select>
+      </label>
+    </div>
+    <div id="msg"></div>
+    <div id="jobs" style="display:flex;flex-direction:column;gap:12px"></div>
+  </main>
+</div>
+
+<section class="page" id="view-profiel" hidden>
+  <h2>Zoekprofiel</h2>
+  <p>Deze woorden bepalen de volgorde bij "Best passend" en worden alleen op dit apparaat bewaard. Wil je dat de zoekrondes zelf anders gaan zoeken, geef het door in de chat met Claude.</p>
+  <div class="field">
+    <label for="p-terms">Functies en onderwerpen</label>
+    <small>Eén per regel.</small>
+    <textarea id="p-terms"></textarea>
+  </div>
+  <div class="field">
+    <label for="p-orgs">Organisaties om in de gaten te houden</label>
+    <small>Eén per regel. De zoekronde kijkt ook gericht bij deze werkgevers.</small>
+    <textarea id="p-orgs"></textarea>
+  </div>
+  <div class="field">
+    <label for="p-regio">Plaatsen</label>
+    <small>Eén per regel.</small>
+    <textarea id="p-regio"></textarea>
+  </div>
+  <div class="field">
+    <label for="p-excl">Uitsluiten</label>
+    <small>Woorden waardoor een vacature niet relevant is, bijvoorbeeld stage of junior. Eén per regel.</small>
+    <textarea id="p-excl"></textarea>
+  </div>
+  <div class="savebar"><button type="button" id="p-save">Profiel opslaan</button><span id="p-status"></span></div>
+</section>
+
+<section class="page" id="view-bronnen" hidden>
+  <h2>Bronnen en meldingen</h2>
+  <p id="src-run">Nog geen zoekronde geregistreerd.</p>
+  <p>Vijf keer per dag zoekt een automatische ronde deze bronnen af en ruimt verlopen vacatures op. Deze pagina haalt elke 5 minuten de nieuwste lijst op; nieuwe vacatures verschijnen dan in een pop-up. Wat je bewaart of als gesolliciteerd markeert, blijft alleen op dit apparaat.</p>
+  <div class="tablewrap">
+    <table class="src">
+      <thead><tr><th>Bron</th><th>Wat er staat</th></tr></thead>
+      <tbody id="src-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+
+(function(){
+  var LS={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  var labels=LS.get("vr-labels")||{};
+  var profiel=LS.get("vr-profiel")||null;
+  var jobs=[], meta=null, colCbs=[], metaCbs=[];
+  function snapCol(){return {docs:jobs.map(function(j){var c=Object.assign({},j);return {id:j.id,exists:true,data:function(){return c}}}),size:jobs.length,empty:!jobs.length,metadata:{fromCache:false,hasPendingWrites:false},docChanges:function(){return []}}}
+  function docSnap(v){return {exists:!!v,data:function(){return v},metadata:{fromCache:false}}}
+  function load(){
+    return fetch("vacatures.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
+      jobs=(d.vacatures||[]).map(function(j){var o=Object.assign({},j); o.label=labels[o.id]||""; return o;});
+      meta={datum:d.bijgewerkt,nieuw:d.nieuw,opmerking:d.opmerking||""};
+      colCbs.forEach(function(cb){cb(snapCol())}); metaCbs.forEach(function(cb){cb(docSnap(meta))});
+    }).catch(function(){});
+  }
+  var started=false;
+  function start(){ if(started) return; started=true; load(); setInterval(load, 5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden) load(); }); }
+  var db={
+    collection:function(){return {onSnapshot:function(cb){colCbs.push(cb); start(); return function(){}}}},
+    doc:function(path){
+      return {
+        onSnapshot:function(cb){ if(path==="config/profiel"){ setTimeout(function(){cb(docSnap(profiel))},0); } else if(path==="meta/laatsteRun"){ metaCbs.push(cb); if(meta) cb(docSnap(meta)); } return function(){}},
+        update:function(d){var id=path.split("/")[1]; if("label" in d){ if(d.label) labels[id]=d.label; else delete labels[id]; LS.set("vr-labels",labels);} jobs.forEach(function(j){if(j.id===id)Object.assign(j,d)}); return Promise.resolve();},
+        set:function(d){ if(path==="config/profiel"){profiel=d;LS.set("vr-profiel",d);} return Promise.resolve();}
+      };
+    }
+  };
+  window.claude={use:function(n){return Promise.resolve(n==="db"?db:null)}};
+})();
+
+</script>
+<script>
+(function(){
+  "use strict";
+  var THEMA = ["Public affairs","Parlementair","Bestuursadvies","Corporate affairs","Consultancy","Beleid","Economie","Internationaal","Communicatie","Campagnes","Wonen en ruimte","Interieur en styling"];
+  var SECTOR = ["Rijksoverheid","Gemeente of provincie","Overige publieke organisatie","Internationale organisatie","Corporate","Consultancy","Adviesbureau","Campagne- of communicatiebureau","Maatschappelijke organisatie","Interieur en design"];
+  var REGIO = ["Den Haag e.o.","Amsterdam e.o.","Utrecht e.o.","Overig Nederland"];
+  var SEN = ["Junior","Medior","Senior","Lead of manager","Director","Onbekend"];
+  var SOURCES = [
+    ["Werken voor Nederland","Alle Rijksoverheid-vacatures (ministeries, uitvoeringsorganisaties)"],
+    ["Werken bij de Overheid / Binnenlands Bestuur","Gemeenten, provincies, waterschappen, Kamer en Hoge Colleges"],
+    ["Lobbynieuws","Gespecialiseerd in public affairs en lobby"],
+    ["LinkedIn, Indeed, Glassdoor, Magnet.me","Brede vacaturebanken, inclusief corporates"],
+    ["Carrièresites van je watchlist","Bijvoorbeeld Heineken, KLM, Booking.com, Schiphol, Shell, ING, Deloitte"],
+    ["Consultancy","Deloitte, EY, PwC, KPMG, Accenture, Capgemini Invent, Berenschot, AEF, Twynstra Gudde, BCG, McKinsey, Bain, Ecorys, SEO, Rebel en meer"],
+    ["Public-affairs- en campagnebureaus","Meuten, Publieke Zaken, IvCB, EPPA, Considerati, Wepublic, Schuttelaar, Dr\u00f6ge & van Drimmelen"],
+    ["Interieur en styling","Stylingbureaus, interieurontwerp, visual merchandising en woonmerken in Amsterdam en omgeving"],
+    ["Villamedia, 8baan, Jobbird, Vacat","Aanvullende banken waar overheid en non-profit vaak plaatsen"]
+  ];
+
+  var state = {
+    jobs: [], profile: null, meta: null, loaded:false,
+    lastVisit: null, db:null, canWrite:true
+  };
+  var $ = function(id){return document.getElementById(id)};
+
+  try { state.lastVisit = localStorage.getItem("vr-lastVisit"); } catch(e){}
+  function markVisit(){ try{ localStorage.setItem("vr-lastVisit", new Date().toISOString()); }catch(e){} }
+
+  // ---------- filter UI ----------
+  function buildGroup(el, list, key){
+    el.innerHTML = "";
+    list.forEach(function(v){
+      var id = "c-"+key+"-"+v.replace(/[^a-z0-9]/gi,"");
+      var l = document.createElement("label"); l.className="opt";
+      var i = document.createElement("input"); i.type="checkbox"; i.id=id; i.value=v; i.dataset.group=key;
+      i.addEventListener("change", render);
+      var t = document.createElement("span"); t.textContent=v;
+      var c = document.createElement("span"); c.className="cnt"; c.dataset.cnt=key+"|"+v;
+      l.append(i,t,c); el.appendChild(l);
+    });
+  }
+  buildGroup($("g-thema"),THEMA,"thema");
+  buildGroup($("g-sector"),SECTOR,"sector");
+  buildGroup($("g-regio"),REGIO,"regio");
+  buildGroup($("g-sen"),SEN,"sen");
+  function checked(key){ return Array.prototype.slice.call(document.querySelectorAll('input[data-group="'+key+'"]:checked')).map(function(i){return i.value}); }
+
+  ["f-q","f-onlynew","f-onlysaved","f-showhidden","f-hideclosed","f-salunk","f-sal5","f-expunk","f-sort"].forEach(function(id){
+    $(id).addEventListener(id==="f-q"?"input":"change", render);
+  });
+  $("f-sal").addEventListener("input", function(){ $("o-sal").textContent = +this.value ? "€ "+fmt(+this.value) : "geen grens"; render(); });
+  $("f-exp").addEventListener("input", function(){ $("o-exp").textContent = this.value+" jaar"; render(); });
+  $("f-reset").addEventListener("click", function(){
+    document.querySelectorAll('aside input[type="checkbox"]').forEach(function(i){ i.checked = (i.id==="f-hideclosed"||i.id==="f-salunk"||i.id==="f-expunk"); });
+    $("f-q").value=""; $("f-sal").value=0; $("f-exp").value=8;
+    $("o-sal").textContent="geen grens"; $("o-exp").textContent="8 jaar"; render();
+  });
+  $("toggle-filters").addEventListener("click", function(){
+    var f=$("filters"); var open=!f.classList.contains("open"); f.classList.toggle("open",open); this.setAttribute("aria-expanded",String(open));
+  });
+
+  // tabs
+  document.querySelectorAll("nav.tabs button").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll("nav.tabs button").forEach(function(x){x.setAttribute("aria-selected", String(x===b));});
+      ["vacatures","profiel","bronnen"].forEach(function(v){ $("view-"+v).hidden = (v!==b.dataset.view); });
+    });
+  });
+
+  // ---------- helpers ----------
+  function fmt(n){ return n.toLocaleString("nl-NL"); }
+  function today(){ var d=new Date(); d.setHours(0,0,0,0); return d; }
+  function parseDate(s){ if(!s) return null; var d=new Date(s.length<=10? s+"T00:00:00": s); return isNaN(d)?null:d; }
+  function daysLeft(s){ var d=parseDate(s); if(!d) return null; return Math.round((d - today())/86400000); }
+  var sessionNew = {};
+  function isNew(j){
+    if(j.label) return false;
+    if(sessionNew[j.id]) return true;
+    var g=parseDate(j.gevonden); if(!g) return false;
+    if(!state.lastVisit) return (today()-g)/86400000 <= 3;
+    return g > new Date(state.lastVisit);
+  }
+  function isClosed(j){ if(j.status==="gesloten") return true; var d=daysLeft(j.sluitdatum); return d!==null && d<0; }
+  function words(list){ return (list||[]).map(function(s){return String(s).toLowerCase().trim()}).filter(Boolean); }
+  function score(j){
+    var p = state.profile || {};
+    var hay = [j.titel,j.organisatie,j.samenvatting,(j.themas||[]).join(" ")].join(" ").toLowerCase();
+    var s = 0;
+    words(p.zoektermen).forEach(function(t){ if(hay.indexOf(t)>-1) s += (String(j.titel).toLowerCase().indexOf(t)>-1 ? 3 : 1); });
+    words(p.organisaties).forEach(function(o){ if(String(j.organisatie).toLowerCase().indexOf(o)>-1) s += 3; });
+    if(j.regio==="Den Haag e.o."||j.regio==="Amsterdam e.o.") s += 2;
+    words(p.uitsluiten).forEach(function(x){ if(String(j.titel).toLowerCase().indexOf(x)>-1) s -= 4; });
+    if(isClosed(j)) s -= 5;
+    return s;
+  }
+  function sen(j){ return j.senioriteit || "Onbekend"; }
+  var STAGE = /\b(stage|stages|stagiair|stagiaire|meeloopstage|meewerkstage|afstudeer\w*|intern|internship|werkstudent|traineeship|trainee)\b/i;
+  function rijkBuitenSchaal(j){
+    if(j.sector!=="Rijksoverheid") return false;
+    if(j.schaal!=null) return j.schaal<11 || j.schaal>13;
+    var top=j.salMax; if(top==null) return false;
+    return top<5900 || top>8000;
+  }
+  function isExcluded(j){ return STAGE.test(String(j.titel||"")) || (j.ervaringMin!=null && j.ervaringMin>8) || rijkBuitenSchaal(j); }
+
+  // ---------- render ----------
+  function filtered(){
+    var q = $("f-q").value.toLowerCase().trim();
+    var th = checked("thema"), se = checked("sector"), re = checked("regio"), sn = checked("sen");
+    var minSal = +$("f-sal").value, salUnk = $("f-salunk").checked;
+    var maxExp = +$("f-exp").value, expUnk = $("f-expunk").checked;
+    return state.jobs.filter(function(j){
+      if(isExcluded(j)) return false;
+      if(j.label==="verborgen" && !$("f-showhidden").checked) return false;
+      if($("f-hideclosed").checked && isClosed(j)) return false;
+      if($("f-onlynew").checked && !isNew(j)) return false;
+      if($("f-onlysaved").checked && j.label!=="bewaard" && j.label!=="gesolliciteerd") return false;
+      if(q){ var hay=[j.titel,j.organisatie,j.plaats,j.samenvatting].join(" ").toLowerCase(); if(hay.indexOf(q)<0) return false; }
+      if(th.length && !(j.themas||[]).some(function(t){return th.indexOf(t)>-1})) return false;
+      if(se.length && se.indexOf(j.sector)<0) return false;
+      if(re.length && re.indexOf(j.regio)<0) return false;
+      if(sn.length && sn.indexOf(sen(j))<0) return false;
+      var top = j.salMax || j.salMin;
+      if(top==null){ if(!salUnk && minSal>0) return false; }
+      else if(minSal>0 && top<minSal) return false;
+      if(j.ervaringMin==null){ if(!expUnk) return false; }
+      else if(j.ervaringMin>maxExp) return false;
+      if($("f-sal5").checked && top!=null && top<5000) return false;
+      return true;
+    });
+  }
+  function updateCounts(){
+    var base = state.jobs.filter(function(j){ return !isExcluded(j) && j.label!=="verborgen" && !isClosed(j); });
+    document.querySelectorAll("[data-cnt]").forEach(function(el){
+      var p = el.dataset.cnt.split("|"), k=p[0], v=p[1];
+      var n = base.filter(function(j){
+        if(k==="thema") return (j.themas||[]).indexOf(v)>-1;
+        if(k==="sector") return j.sector===v;
+        if(k==="regio") return j.regio===v;
+        if(k==="sen") return sen(j)===v;
+      }).length;
+      el.textContent = n;
+    });
+    $("st-new").textContent = state.jobs.filter(function(j){return isNew(j)&&!isClosed(j)&&!isExcluded(j)}).length;
+    $("st-open").textContent = base.length;
+    $("st-saved").textContent = state.jobs.filter(function(j){return j.label==="bewaard"}).length;
+    $("st-applied").textContent = state.jobs.filter(function(j){return j.label==="gesolliciteerd"}).length;
+  }
+  function salText(j){
+    if(j.salMin==null && j.salMax==null) return null;
+    if(j.salMin!=null && j.salMax!=null) return "€ "+fmt(j.salMin)+" – "+fmt(j.salMax);
+    return "€ "+fmt(j.salMin||j.salMax);
+  }
+  function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+  function render(){
+    if(!state.loaded) return;
+    updateCounts();
+    var list = filtered();
+    var sort = $("f-sort").value;
+    list.sort(function(a,b){
+      if(sort==="nieuw") return String(b.gevonden||"").localeCompare(String(a.gevonden||""));
+      if(sort==="deadline"){ var da=daysLeft(a.sluitdatum), dbb=daysLeft(b.sluitdatum); return (da==null?9999:da)-(dbb==null?9999:dbb); }
+      if(sort==="salaris") return ((b.salMax||b.salMin||0)-(a.salMax||a.salMin||0));
+      return score(b)-score(a) || String(b.gevonden||"").localeCompare(String(a.gevonden||""));
+    });
+    var tot = state.jobs.filter(function(j){return !isExcluded(j)}).length;
+    $("count").textContent = list.length + (list.length===1?" vacature":" vacatures") + " getoond van " + tot;
+    var box = $("jobs"); box.innerHTML="";
+    if(!list.length){
+      box.appendChild(el("div","empty", state.jobs.length ? "Geen vacatures met deze filters. Verruim de filters of wis ze." : "Er staan nog geen vacatures in de radar. De eerstvolgende zoekronde vult deze lijst."));
+      return;
+    }
+    list.forEach(function(j){ box.appendChild(card(j)); });
+  }
+
+  function card(j){
+    var a = el("article","job");
+    if(isNew(j)) a.classList.add("is-new");
+    if(j.label==="bewaard") a.classList.add("saved");
+    if(j.label==="gesolliciteerd") a.classList.add("applied");
+    if(j.label==="verborgen") a.classList.add("hidden-job");
+
+    var left = el("div");
+    left.appendChild(el("h2",null,j.titel));
+    a.appendChild(left);
+
+    var right = el("div","right");
+    var dl = daysLeft(j.sluitdatum);
+    var dtxt = dl==null ? "Sluitingsdatum onbekend" : dl<0 ? "Verlopen" : dl===0 ? "Sluit vandaag" : "Sluit over "+dl+(dl===1?" dag":" dagen");
+    right.appendChild(el("div","deadline",dtxt));
+    a.appendChild(right);
+
+    var facts = el("div","facts");
+    function fact(label, val, cls, sub){ var f=el("div","fact"); f.appendChild(el("span",null,label)); f.appendChild(el("b",cls||null,val)); if(sub) f.appendChild(el("small",null,sub)); facts.appendChild(f); }
+    fact("Bedrijf", j.organisatie || "Onbekend", j.organisatie?null:"unknown");
+    fact("Locatie", j.plaats || "Onbekend", j.plaats?null:"unknown", j.regio||null);
+    var s = salText(j); var top=j.salMax||j.salMin;
+    fact("Salaris", s || "Niet vermeld", s ? ("sal"+(top>=5000?" hi":"")) : "unknown", s ? "bruto per maand" : null);
+    a.appendChild(facts);
+
+    var meta = el("div","meta");
+    if(isNew(j)) meta.appendChild(el("span","chip new","Nieuw"));
+    if(dl!=null && dl>=0 && dl<=7) meta.appendChild(el("span","chip closing","Sluit binnenkort"));
+    (j.themas||[]).forEach(function(t){ meta.appendChild(el("span","chip theme",t)); });
+    meta.appendChild(el("span","chip",j.sector||"Onbekend"));
+    if(j.schaal!=null) meta.appendChild(el("span","chip","Schaal "+j.schaal));
+    meta.appendChild(el("span","chip",sen(j)));
+    meta.appendChild(el("span","chip", j.ervaringMin!=null ? j.ervaringMin+"+ jaar ervaring" : "Ervaring onbekend"));
+    if(j.uren) meta.appendChild(el("span","chip",j.uren+" uur"));
+    if(j.contract) meta.appendChild(el("span","chip",j.contract));
+    a.appendChild(meta);
+
+    var d = el("details","more");
+    d.appendChild(el("summary",null,"Wat houdt de functie in"));
+    d.appendChild(el("p",null,j.samenvatting || "Geen samenvatting beschikbaar."));
+    var chk = j.gecontroleerd ? " · Gecontroleerd op "+parseDate(j.gecontroleerd).toLocaleDateString("nl-NL",{day:"numeric",month:"long"})+": "+(j.status==="doorlopend"?"staat open, geen sluitdatum":"staat open") : "";
+    var v = el("div","verif","Gevonden via "+(j.bron||"onbekende bron")+(j.gevonden?" op "+parseDate(j.gevonden).toLocaleDateString("nl-NL",{day:"numeric",month:"long"}):"")+chk+(j.opmerking?". "+j.opmerking:""));
+    d.appendChild(v);
+    a.appendChild(d);
+
+    var act = el("div","actions");
+    if(j.url){ var link=el("a","primary","Bekijk vacature"); link.href=j.url; link.target="_blank"; link.rel="noopener"; act.appendChild(link); }
+    [["bewaard","Bewaar"],["gesolliciteerd","Gesolliciteerd"],["verborgen","Niet interessant"]].forEach(function(p){
+      var b=el("button",null,p[1]); b.type="button"; b.setAttribute("aria-pressed", String(j.label===p[0]));
+      b.disabled = !state.canWrite;
+      b.addEventListener("click", function(){ setLabel(j, j.label===p[0] ? "" : p[0]); });
+      act.appendChild(b);
+    });
+    a.appendChild(act);
+    return a;
+  }
+
+  var pending = {};
+  function setLabel(j, label){
+    if(!state.db || pending[j.id]) return;
+    pending[j.id]=true;
+    var prev=j.label; j.label=label; render();
+    state.db.doc("vacatures/"+j.id).update({label:label}).catch(function(e){
+      j.label=prev; render();
+      if(e && e.code==="invalid_argument"){ state.canWrite=false; showMsg("Je kunt deze lijst alleen bekijken; labels opslaan lukt niet.", true); }
+      else showMsg("Opslaan lukte niet. Probeer het zo nog een keer.", true);
+    }).finally(function(){ delete pending[j.id]; });
+  }
+  var knownIds = null;
+  function toast(title, items, onShow){
+    var old=document.querySelector(".toast"); if(old) old.remove();
+    var t=el("div","toast"); t.setAttribute("role","status");
+    t.appendChild(el("h4",null,title));
+    if(items.length){ var ul=el("ul"); items.slice(0,8).forEach(function(j){ ul.appendChild(el("li",null,j.titel+" \u2013 "+(j.organisatie||"")+(j.plaats?" ("+j.plaats+")":""))); }); if(items.length>8) ul.appendChild(el("li",null,"en nog "+(items.length-8)+" meer")); t.appendChild(ul); }
+    var b=el("div","tbtns"); var show=el("button","primary","Toon nieuwe vacatures"); show.type="button";
+    show.addEventListener("click",function(){ $("f-onlynew").checked=true; $("tab-vac").click(); render(); t.remove(); window.scrollTo(0,0); });
+    var close=el("button",null,"Sluiten"); close.type="button"; close.addEventListener("click",function(){t.remove()});
+    b.append(show,close); t.appendChild(b); document.body.appendChild(t);
+    try{ document.title="("+items.length+") Vacatureradar"; }catch(e){}
+  }
+  function showMsg(t, warn){ var m=$("msg"); m.innerHTML=""; if(!t) return; var n=el("div","notice"+(warn?" warn":""),t); m.appendChild(n); }
+
+  // ---------- profile ----------
+  function fillProfile(){
+    var p = state.profile || {};
+    $("p-terms").value = (p.zoektermen||[]).join("\n");
+    $("p-orgs").value = (p.organisaties||[]).join("\n");
+    $("p-regio").value = (p.plaatsen||[]).join("\n");
+    $("p-excl").value = (p.uitsluiten||[]).join("\n");
+  }
+  function lines(id){ return $(id).value.split("\n").map(function(s){return s.trim()}).filter(Boolean); }
+  $("p-save").addEventListener("click", function(){
+    if(!state.db){ $("p-status").textContent="Opslaan is hier niet beschikbaar."; return; }
+    var btn=this; btn.disabled=true; $("p-status").textContent="Opslaan…";
+    var body = Object.assign({}, state.profile||{}, {
+      zoektermen: lines("p-terms"), organisaties: lines("p-orgs"), plaatsen: lines("p-regio"), uitsluiten: lines("p-excl"),
+      bijgewerkt: new Date().toISOString()
+    });
+    state.db.doc("config/profiel").set(body).then(function(){
+      $("p-status").textContent="Opgeslagen op dit apparaat.";
+    }).catch(function(){ $("p-status").textContent="Opslaan lukte niet. Probeer het opnieuw."; })
+      .finally(function(){ btn.disabled=false; });
+  });
+
+  // ---------- sources ----------
+  function renderSources(){
+    var tb=$("src-body"); tb.innerHTML="";
+    SOURCES.forEach(function(s){ var tr=el("tr"); tr.appendChild(el("td",null,s[0])); tr.appendChild(el("td",null,s[1])); tb.appendChild(tr); });
+    var m = state.meta;
+    if(m && m.datum){
+      var d = parseDate(m.datum);
+      var txt = "Laatste zoekronde: "+d.toLocaleString("nl-NL",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+". "+(m.nieuw!=null? m.nieuw+" nieuwe vacature"+(m.nieuw===1?"":"s")+" toegevoegd.":"")+(m.opmerking?" "+m.opmerking:"");
+      $("src-run").textContent = txt;
+      $("runline").textContent = "Laatste zoekronde "+d.toLocaleDateString("nl-NL",{day:"numeric",month:"long"})+" · public affairs, parlementair en bestuurlijk werk";
+    }
+  }
+  renderSources();
+
+  // ---------- data ----------
+  showMsg("Vacatures laden…");
+  var timer = setTimeout(function(){ if(!state.loaded) showMsg("De vacaturelijst is nog niet bereikbaar. Hij verschijnt zodra de verbinding er is.", true); }, 10000);
+
+  (async function(){
+    var db = null, user = null;
+    try { db = await claude.use("db"); } catch(e){}
+    try { user = await claude.use("user"); } catch(e){}
+    if(!db){ clearTimeout(timer); showMsg("Log in op claude.ai om je vacatureradar te zien.", true); return; }
+    state.db = db;
+    try { if(user && user.can){ var w = await user.can("data.write"); if(w===false) state.canWrite=false; } } catch(e){}
+
+    db.collection("vacatures").onSnapshot(function(snap){
+      state.jobs = snap.docs.map(function(d){ var o=Object.assign({}, d.data()); o.id=d.id; return o; });
+      if(!snap.metadata.fromCache){ clearTimeout(timer); }
+      var fresh = state.jobs.filter(function(j){ return !isExcluded(j) && !isClosed(j); });
+      if(!state.loaded){
+        state.loaded=true; showMsg(""); render(); setTimeout(markVisit, 4000);
+        knownIds = {}; fresh.forEach(function(j){ knownIds[j.id]=1; });
+        var nw = fresh.filter(isNew);
+        if(nw.length && state.lastVisit) toast(nw.length+" nieuwe vacature"+(nw.length===1?"":"s")+" sinds je vorige bezoek", nw);
+      } else {
+        var added = fresh.filter(function(j){ return knownIds && !knownIds[j.id]; });
+        added.forEach(function(j){ knownIds[j.id]=1; sessionNew[j.id]=1; });
+        render();
+        if(added.length) toast("Zojuist gepubliceerd: "+added.length+" nieuwe vacature"+(added.length===1?"":"s"), added);
+      }
+    }, function(err){ clearTimeout(timer); showMsg("De vacaturelijst kon niet worden geladen.", true); });
+
+    db.doc("config/profiel").onSnapshot(function(s){ state.profile = s.exists ? s.data() : null; fillProfile(); render(); }, function(){});
+    db.doc("meta/laatsteRun").onSnapshot(function(s){ state.meta = s.exists ? s.data() : null; renderSources(); }, function(){});
+  })();
+})();
+</script>
+</body>
+</html>
