@@ -1,7 +1,7 @@
 {
- "bijgewerkt": "2026-11-17T13:53:24.139329Z",
- "nieuw": 1,
- "opmerking": "Nieuw: Big Four-consultancyrollen in strategie en transformatie.",
+ "bijgewerkt": "2026-11-17T14:18:27.760745Z",
+ "nieuw": 3,
+ "opmerking": "Nieuw: reisorganisaties en luxe maatwerkreizen.",
  "vacatures": [
   {
    "id": "abnamro-corporate-board-secretary",
@@ -928,6 +928,88 @@
    "url": "https://werkenbijdeloitte.nl/vacature/consultant-people-strategy-and-transformation-ref3662f/",
    "samenvatting": "Je helpt CHRO's en managementteams in binnen- en buitenland hun organisatie- en businessstrategie te vertalen naar een toekomstbestendige People Strategy, voor grote corporates en maatschappelijke organisaties. Je werkt in multidisciplinaire teams aan HR-operating models, employee experience en (digitale) transformaties. Projectmanagement is een belangrijk onderdeel.",
    "opmerking": "Door Perry zelf aangedragen. Er staat ook een Senior Consultant-variant open (via Magnet.me)."
+  },
+  {
+   "id": "experiencetravel-senior-reisspecialist-laren",
+   "titel": "Senior Reisspecialist (exclusieve maatwerkreizen)",
+   "organisatie": "ExperienceTravel (International Travel Group)",
+   "plaats": "Laren (Reisboutique)",
+   "regio": "Amsterdam e.o.",
+   "sector": "Reisorganisatie",
+   "themas": [
+    "Reizen & buitenland"
+   ],
+   "uitgelicht": true,
+   "schaal": null,
+   "salMin": null,
+   "salMax": null,
+   "senioriteit": "Senior",
+   "ervaringMin": null,
+   "uren": "32-40",
+   "contract": null,
+   "sluitdatum": null,
+   "gevonden": "2026-11-17T15:00:00Z",
+   "gecontroleerd": "2026-11-17",
+   "status": "doorlopend",
+   "bron": "werkzoeken.nl",
+   "url": "https://www.werkzoeken.nl/vacature/15934887-senior-reisspecialist-experience-travel/",
+   "samenvatting": "Je stelt exclusieve maatwerkreizen samen voor het hoogste segment en adviseert zelfstandig vermogende klanten vanuit de reisboutique van ExperienceTravel in Laren (het Gooi). Het is een commerciële adviesfunctie: van eerste gesprek tot hoogwaardig reisvoorstel en boeking.",
+   "opmerking": "Salaris 'in overleg'; in de reisbranche ligt dit doorgaans ruim onder €5.000. De pagina kon niet automatisch worden geopend; controleer zelf of hij nog open is."
+  },
+  {
+   "id": "travelessence-product-manager-nieuw-zeeland",
+   "titel": "Product Manager Australië & Nieuw-Zeeland",
+   "organisatie": "TravelEssence",
+   "plaats": "Nieuw-Zeeland (Auckland of Wellington)",
+   "regio": "Buitenland",
+   "sector": "Reisorganisatie",
+   "themas": [
+    "Reizen & buitenland",
+    "Internationaal"
+   ],
+   "uitgelicht": true,
+   "schaal": null,
+   "salMin": null,
+   "salMax": null,
+   "senioriteit": "Medior",
+   "ervaringMin": null,
+   "uren": null,
+   "contract": null,
+   "sluitdatum": null,
+   "gevonden": "2026-11-17T15:00:00Z",
+   "gecontroleerd": "2026-11-17",
+   "status": "doorlopend",
+   "bron": "travelessence.nl",
+   "url": "https://www.travelessence.nl/vacancy-product-manager",
+   "samenvatting": "Je woont en werkt in Nieuw-Zeeland en zoekt voor Europese reizigers bijzondere kleinschalige accommodaties en activiteiten in Australië en Nieuw-Zeeland. Je onderhandelt contracten, bezoekt leveranciers regelmatig ter plekke en werkt samen met marketing aan nieuwe reizen. Je reist dus veel door beide landen.",
+   "opmerking": "Geen publicatie- of sluitdatum vermeld; solliciteren via Brooke Lui (brooke@travelessence.co.nz). Vraagt sales/business development-ervaring."
+  },
+  {
+   "id": "tenzing-travel-reisspecialist-zuid-amerika",
+   "titel": "Reisspecialist Zuid-Amerika",
+   "organisatie": "Tenzing Travel & Travelnauts",
+   "plaats": "Amsterdam (deels thuis)",
+   "regio": "Amsterdam e.o.",
+   "sector": "Reisorganisatie",
+   "themas": [
+    "Reizen & buitenland"
+   ],
+   "uitgelicht": true,
+   "schaal": null,
+   "salMin": null,
+   "salMax": null,
+   "senioriteit": "Medior",
+   "ervaringMin": null,
+   "uren": null,
+   "contract": null,
+   "sluitdatum": null,
+   "gevonden": "2026-11-17T15:00:00Z",
+   "gecontroleerd": "2026-11-17",
+   "status": "doorlopend",
+   "bron": "tenzingtravel.nl",
+   "url": "https://www.tenzingtravel.nl/assets/uploads/2026/07/Vacature-Reisspecialist-Zuid-Amerika.pdf",
+   "samenvatting": "Je stelt bijzondere maatwerk-rondreizen naar Zuid-Amerika samen voor stellen (Tenzing Travel) en gezinnen (Travelnauts), van persoonlijk advies tot compleet reisvoorstel. Kantoor in Amsterdam, deels thuiswerken.",
+   "opmerking": "Vacature-pdf van juli 2026; solliciteren via info@travelnauts.nl t.a.v. Erlijn Lefeber. Controleer of hij nog open is."
   }
  ]
 }
