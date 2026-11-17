@@ -1,7 +1,7 @@
 {
- "bijgewerkt": "2026-11-17T13:34:44.784821Z",
+ "bijgewerkt": "2026-11-17T13:53:24.139329Z",
  "nieuw": 1,
- "opmerking": "Nieuw: campagnebureaus (Meute) en reisorganisaties toegevoegd aan de radar.",
+ "opmerking": "Nieuw: Big Four-consultancyrollen in strategie en transformatie.",
  "vacatures": [
   {
    "id": "abnamro-corporate-board-secretary",
@@ -899,6 +899,35 @@
    "url": "https://www.meute.nl/",
    "samenvatting": "Meute is een Amsterdams campagnebureau dat uit de wereld van politieke campagnes komt en maatschappelijke campagnes maakt op basis van gedragswetenschap, onderzoek en framing. Als medior campagnestrateeg bedenk en begeleid je campagnes voor opdrachtgevers als de SVB, NOC*NSF, Natuurmonumenten en Booking.com. Er is ook een team in Brussel voor EU-campagnes.",
    "opmerking": "De vacature staat op de homepage van Meute (onderaan, 'Wij zoeken een medior campagnestrateeg'); de volledige tekst opent via de knop 'Join the meute!'. Er staat ook een senior campagnestrateeg open."
+  },
+  {
+   "id": "deloitte-consultant-people-strategy-transformation",
+   "titel": "Consultant People Strategy & Transformation",
+   "organisatie": "Deloitte (Technology & Transformation, Human Capital)",
+   "plaats": "Amsterdam (Zuidas)",
+   "regio": "Amsterdam e.o.",
+   "sector": "Consultancy",
+   "themas": [
+    "Consultancy",
+    "Bestuursadvies",
+    "Internationaal"
+   ],
+   "uitgelicht": true,
+   "schaal": null,
+   "salMin": null,
+   "salMax": null,
+   "senioriteit": "Medior",
+   "ervaringMin": null,
+   "uren": null,
+   "contract": null,
+   "sluitdatum": null,
+   "gevonden": "2026-11-17T14:45:00Z",
+   "gecontroleerd": "2026-11-17",
+   "status": "doorlopend",
+   "bron": "werkenbijdeloitte.nl (doorgestuurd door Perry)",
+   "url": "https://werkenbijdeloitte.nl/vacature/consultant-people-strategy-and-transformation-ref3662f/",
+   "samenvatting": "Je helpt CHRO's en managementteams in binnen- en buitenland hun organisatie- en businessstrategie te vertalen naar een toekomstbestendige People Strategy, voor grote corporates en maatschappelijke organisaties. Je werkt in multidisciplinaire teams aan HR-operating models, employee experience en (digitale) transformaties. Projectmanagement is een belangrijk onderdeel.",
+   "opmerking": "Door Perry zelf aangedragen. Er staat ook een Senior Consultant-variant open (via Magnet.me)."
   }
  ]
 }
